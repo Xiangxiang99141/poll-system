@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import {
     Container,
     Row,
@@ -10,19 +11,33 @@ import {
 } from "react-bootstrap";
 // import users from 'data/'
 export default function Login() {
+    const navigate = useNavigate();
     const [account, setAccount] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // 假設帳號為 admin 密碼為 1234
-        if (account === "admin" && password === "1234") {
-        alert("登入成功！");
-        setError("");
-        } else {
-        setError("帳號或密碼錯誤");
-        }
+        fetch('http://localhost:5001/login',{
+            body:JSON.stringify({
+                account:account,
+                password:password
+            }),
+            method:"POST",
+            headers: {
+                // "user-agent": "Mozilla/4.0 MDN Example",
+                "content-type": "application/json",
+            },
+        }).then((res)=>res.json())
+        .then((data)=>{
+            if(data.success){
+                setError('');
+                localStorage.setItem("token", data.userId);
+                navigate('/'); // 導回首頁
+            }else{
+                setError(data.error);
+            }
+        })
     };
 
     return (
