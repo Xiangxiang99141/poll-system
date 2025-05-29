@@ -3,6 +3,7 @@ import { Voter } from "./Voter";
 
 import generatePassword from '../js/generatePassword'
 import generateString from '../js/generateString'
+import fs from 'fs'
 
 export class Admin extends User{
     genVoter(count=8){
@@ -14,5 +15,12 @@ export class Admin extends User{
             voters.push(voter)
         }
         return voters
+    }
+    save(voters,path){
+        fs.writeFileSync(path,voters,function(error){
+            if(error) throw error;
+            alert("Saved!!");
+            console.log("Saved!!");
+        });
     }
 }
