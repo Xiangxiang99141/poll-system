@@ -1,10 +1,24 @@
 import React from "react";
-import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import NavDropdown from 'react-bootstrap/NavDropdown';
+import { Navbar, Nav, Container } from 'react-bootstrap';
+
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 export default function Header(){
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        setIsLoggedIn(!!token);
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        setIsLoggedIn(false);
+        navigate('/');
+    };
+
     return(
         <Navbar expand="lg" className="bg-body-tertiary">
             <Container>
@@ -16,7 +30,14 @@ export default function Header(){
                         <Nav.Link href="#link" >候選人列表</Nav.Link>
                     </Nav>
                     <Nav className="ms-auto">
-                        <Nav.Link href="/login">登入</Nav.Link>
+                        {isLoggedIn ? (
+                            <>
+                                <Nav.Link href="/admin">後台</Nav.Link>
+                                <Nav.Link onClick={handleLogout}>登出</Nav.Link>
+                            </>
+                        ) : (
+                            <Nav.Link href="/login">登入</Nav.Link>
+                        )}
                     </Nav>
                 </Navbar.Collapse>
             </Container>
