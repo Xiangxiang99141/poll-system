@@ -17,7 +17,7 @@ export default function Vote(){
                 setCandidates(data.candidates)
             }
         })
-        
+        setIsVoted(localStorage.getItem('isVoted')==='true')
         if (error || info) {
             const timer = setTimeout(() => {
                 setError('');
@@ -26,9 +26,6 @@ export default function Vote(){
             return () => clearTimeout(timer); // 清除定時器避免 memory leak
         }
         
-        if(localStorage.getItem('isVoted')){
-            setIsVoted(true)
-        }
         
     },[error,info])
 
@@ -43,14 +40,14 @@ export default function Vote(){
                 >
                     <Tab eventKey="home" title="候選人列表">
                         {
-                            error != '' (
+                            error  && (
                             <Alert key='errorbox' variant='danger'>
                                 {error}
                             </Alert>
                             )
                         }
                         {
-                            info != ''(
+                            info && (
                             <Alert key='infobox' variant='info'>
                                 {info}
                             </Alert>
@@ -64,9 +61,9 @@ export default function Vote(){
                                     <Col key={index}>
                                         <CandidatesProfile
                                             key={candidate.id}
-                                            id={candidate.id}
                                             name={candidate.name}
                                             politics={candidate.politics}
+                                            voteCount={candidate.votedCount}
                                         />
                                         {
                                             isVoted ? (
@@ -88,6 +85,7 @@ export default function Vote(){
                                                 .then((data)=>{
                                                     if(data.success){
                                                         setIsVoted(true)
+                                                        localStorage.setItem('isVoted', true);
                                                         setInfo(data.message)
                                                     }else{
                                                         setError(data.message)
