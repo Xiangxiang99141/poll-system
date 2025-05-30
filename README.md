@@ -7,6 +7,43 @@
 - client資料夾 - 前端頁面
 - server資料夾 - 後端伺服器
 
+## 使用教學
+1. 進入server/data，複製 admin-template.json，並重新命名為admin.json，並依照以下設定 
+```json
+    {
+        "id":"",        #可先不填
+        "name":"",      #管理員名稱
+        "account":"",   #管理員帳號
+        "password":""   #管理員密碼
+    }
+```
+2. 在server 資料夾使用以下指令，啟動後端伺服器
+```cmd
+npm start
+```
+3. 在client 資料夾使用以下指令，啟動前端伺服器
+```cmd
+npm run dev
+```
+4. 網頁介面展示
+- 主頁面
+![主頁面](https://cdn.discordapp.com/attachments/1378012005906256014/1378012026139316405/image.png?ex=683b0d35&is=6839bbb5&hm=b7358cf4c67c060febde0371726c0ee66d0934611e69d190d23c3cea62731544&) 
+
+
+- 登入頁面
+![登入頁面](https://cdn.discordapp.com/attachments/1378012005906256014/1378012698855477370/image.png?ex=683b0dd5&is=6839bc55&hm=b3cbf61b6114236f9118dd93d7dadcf6159debb212b21889c1aa81662a1e65b5&)
+
+
+- 後台頁面-選民帳號
+![後台頁面](https://cdn.discordapp.com/attachments/1378012005906256014/1378012856783736942/image.png?ex=683b0dfb&is=6839bc7b&hm=4b058113f7ea11bd482ee92aca71c887d3d12514a7104704040af1133a6b3677&s)
+
+
+- 後台頁面-新增候選人
+![後台頁面](https://cdn.discordapp.com/attachments/1378012005906256014/1378012902568759397/image.png?ex=683b0e06&is=6839bc86&hm=3e69a73a1605fb8d702e63e960e2515b6857478bada606905b48d284a6b144f8&)
+
+- 後台頁面-候選人
+![後台頁面](https://cdn.discordapp.com/attachments/1378012005906256014/1378012931949592576/image.png?ex=683b0e0d&is=6839bc8d&hm=638ed9a7dacdf72a7e056f8ad073c8162a42f93f7fcff061e5a7466ca347d34f&)
+
 ## 📁 資料夾結構
 ```
 /
