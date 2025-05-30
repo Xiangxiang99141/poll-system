@@ -8,13 +8,15 @@ export default function Header(){
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        setIsLoggedIn(!!token);
-    }, []);
+    const token = localStorage.getItem('token');
+    // useEffect(() => {
+    //     setIsLoggedIn(!!token);
+    // }, []);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('isAdmin');
+        localStorage.removeItem('isVoted'); 
         setIsLoggedIn(false);
         navigate('/');
     };
@@ -27,10 +29,10 @@ export default function Header(){
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
                         <Nav.Link href="/">首頁</Nav.Link>
-                        <Nav.Link href="#link" >候選人列表</Nav.Link>
+                        <Nav.Link href="/vote" >我要投票</Nav.Link>
                     </Nav>
                     <Nav className="ms-auto">
-                        {isLoggedIn ? (
+                        {token ? (
                             <>
                                 <Nav.Link href="/manage">後台</Nav.Link>
                                 <Nav.Link onClick={handleLogout}>登出</Nav.Link>
