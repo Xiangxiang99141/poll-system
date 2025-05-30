@@ -12,7 +12,7 @@ const port = 5001;
 
 app.use(cors());
 app.use(express.json());
-const adminData = JSON.parse(fs.readFileSync('./data/testAdmin.json','utf-8'));
+const adminData = JSON.parse(fs.readFileSync('./data/admin.json','utf-8'));
 let admin = new Admin(adminData.name,adminData.account,adminData.password,adminData.id);
 
 
