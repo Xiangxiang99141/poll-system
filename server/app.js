@@ -82,10 +82,20 @@ app.post('/login',(req,res)=>{
         voteFile.forEach(vote => {
             vote.userId.includes(findId)?isVote=true:isVote=false
         });
-        if(isAdmin || result.length>0){
+
+           // 防止 result 為 undefined 時存取 id
+        if (!isAdmin && !result) {
+            return res.json({
+                success: false,
+                error: '帳號或密碼錯誤',
+                account: null
+            });
+        }
+
+        if(isAdmin || result){
             res.json({
                 success:true,
-                userId:isAdmin?admin.id:result.id,
+                userId:findId,
                 isAdmin:isAdmin,
                 isVoted:isVote
             })
@@ -120,13 +130,27 @@ app.post('/addcandidate',(req,res)=>{
 
 app.get('/getcandidates',(req,res)=>{
     let path = './data/candidates.json'
+    const votesPath = './data/vote.json';
+    let votes = [];
+
+    if (fs.existsSync(votesPath)) {
+        votes = JSON.parse(fs.readFileSync(votesPath, 'utf-8'));
+    }
+    
     if(fs.existsSync(path)){
         let candidates = JSON.parse(fs.readFileSync(path,'utf-8'));
-        tmp = candidates.map((candidate)=>{
-            delete candidate.account;
-            delete candidate.password
-        })
-        res.json({success:true,candidates:candidates})
+        const enrichedCandidates = candidates.map(candidate => {
+        // Remove sensitive fields
+        delete candidate.account;
+        delete candidate.password;
+
+        // Check if this candidate has votes
+        const voteEntry = votes.find(v => v.cId === candidate.id);
+        candidate.votedCount = voteEntry ? voteEntry.userId.length : 0;
+
+        return candidate;
+    });
+        res.json({success:true,candidates:enrichedCandidates})
     }else{
         res.json({success:false,candidates:[],error:'沒有候選人資料'})
     }
