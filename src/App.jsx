@@ -8,14 +8,14 @@ import Welcome from './pages/welcome';
 import Login from './pages/login';
 import NotFound from './pages/404notfound';
 function App() {
-
+  const isAdmin = localStorage.getItem('isAdmin') || false;
   return (
     <>
       <Header/>
       <Container className='p-3'>
         <Routes>
           <Route path='/' element={<Welcome/>}></Route>
-          <Route path='/manage' element={<Manage/>}></Route>
+          <Route path='/manage' element={<Manage isAdmin={isAdmin}/>}></Route>
           <Route path='/login' element={<Login/>}></Route>
           <Route path='*' element={<NotFound/>}></Route>
         </Routes>
