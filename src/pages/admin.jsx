@@ -118,18 +118,6 @@ export default function Admin(){
                 if(data.voters != null){
                     setVoters(data.voters);
                 }
-            })
-            .catch((err) => console.error("無法取得 admin 資料", err));
-            
-            fetch('http://localhost:5001/getcandidates')
-            .then((res)=> res.json())
-            .then((data)=>{
-                // const a = new Admin(data.name,data.account,data.password);
-                // console.log(data);
-                setCandidates(data);
-                if(data.voters != null){
-                    setVoters(data.voters);
-                }
                 if(data.candidates != null){
                     setCandidates(data.candidates);
                 }
@@ -225,17 +213,24 @@ export default function Admin(){
                     className="mb-3"
                 >
                     <Tab eventKey="candidate" title="候選人">
-                        {candidates && candidates.length > 0 ? (candidates.map((candidate)=>{
-                                return(
-                                    <Col key={candidate.id} sm={4} className="mb-3">
-                                    <CandidatesProfile 
-                                        id={candidate.id}
-                                        name={candidate.name}
-                                        account={candidate.account}
-                                        password={candidate.password}
-                                    />
-                                </Col>)
-                            })):
+                        {candidates && candidates.length > 0 ? (
+                            <Row>
+                                {
+                                    candidates.map((candidate)=>{
+                                    return(
+                                        <Col key={candidate.id} sm={4} className="mb-3">
+                                            <CandidatesProfile 
+                                                id={candidate.id}
+                                                name={candidate.name}
+                                                account={candidate.account}
+                                                password={candidate.password}
+                                                politics={candidate.politics}
+                                            />
+                                        </Col>
+                                )})
+                                }
+                            </Row>
+                            ):
                                 (
                                     <Row>
                                         <Alert key="candidateInfo" variant='info'>

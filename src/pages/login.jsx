@@ -34,6 +34,7 @@ export default function Login() {
                 setError('');
                 localStorage.setItem("token", data.userId);
                 localStorage.setItem("isAdmin", data.isAdmin);
+                localStorage.setItem("isVoted", data.isVoted);
                 navigate('/'); // 導回首頁
             }else{
                 setError(data.error);
