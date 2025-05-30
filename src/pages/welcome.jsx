@@ -56,6 +56,7 @@ export default function Welcome(){
                                             id={candidate.id}
                                             name={candidate.name}
                                             politics={candidate.politics}
+                                            voteCount={candidate.votedCount}
                                         />
                                     </Col>
                                 )
