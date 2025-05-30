@@ -33,6 +33,7 @@ export default function Login() {
             if(data.success){
                 setError('');
                 localStorage.setItem("token", data.userId);
+                localStorage.setItem("isAdmin", data.isAdmin);
                 navigate('/'); // 導回首頁
             }else{
                 setError(data.error);
