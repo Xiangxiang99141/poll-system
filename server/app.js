@@ -4,6 +4,8 @@ const Admin = require('./class/Admin');
 const fs = require('fs');
 const cors = require('cors');
 const { executionAsyncResource } = require('async_hooks');
+const Candidate = require('./class/Candidate');
+const { error } = require('console');
 
 // express 引入的是一個 function
 const app = express();
@@ -20,7 +22,8 @@ let admin = new Admin(adminData.name,adminData.account,adminData.password,adminD
 let votersPath = './data/voters.json';
 // var voters = null;
 let voters = fs.existsSync(votersPath)?JSON.parse(fs.readFileSync(votersPath,{encoding:'utf-8'})):null;
-
+let candidatesPath = './data/candidates.json'
+let candidates = fs.existsSync(candidatesPath)?JSON.parse(fs.readFileSync(candidatesPath,'utf-8')):[]
 
 
 // 如何處理不同的 request，參數分別為 url 和要執行的 function
@@ -38,7 +41,8 @@ app.get('/admin',(req,res)=>{
         "name":admin.name,
         "account":admin.account,
         "password":admin.password},
-        voters:voters
+        voters:voters,
+        candidates:candidates
     });
 })
 
@@ -48,12 +52,22 @@ app.get('/create/:count',(req,res)=>{
     res.json(voters);
 })
 
-app.post('/admin/save',(req,res)=>{
-    let result = admin.save(req.body);
-    if(result.state){
-        res.json({success:true});
-    }else{
-        res.json({success:false,error:result.error});
+app.post('/admin/save/:type',(req,res)=>{
+    if(req.params.type === 'v'){
+        let result = admin.saveVoter(req.body);
+        if(result.state){
+            res.json({success:true});
+        }else{
+            res.json({success:false,error:result.error});
+        }
+    }
+    if(req.params.type === 'c'){
+        let result = admin.saveCandidate(req.body);
+        if(result.state){
+            res.json({success:true});
+        }else{
+            res.json({success:false,error:result.error});
+        }
     }
 })
 
@@ -61,10 +75,12 @@ app.post('/login',(req,res)=>{
     const {account,password} = req.body;
     if(voters != null){
         const result = voters.filter((voter)=>voter.account==account && voter.password == password);
-        if(result.length>0){
+        const isAdmin = account==admin.account && password == admin.password || false
+        if(result.length>0 || isAdmin){
             res.json({
                 success:true,
-                userId:result[0].id
+                userId:isAdmin?admin.id:result[0].id,
+                isAdmin:isAdmin
             })
         }else{
             res.json({
@@ -82,6 +98,28 @@ app.post('/login',(req,res)=>{
     }
 })
 
+app.post('/getuser',(req,res)=>{
+    const {userId} = req.body;
+    const result = voters.filter((voter)=>voter.id==userId);
+    res.json(result[0]);
+})
+
+app.post('/addcandidate',(req,res)=>{
+    const {name,account,password,politics} = req.body;
+    let candidates = new Candidate(name,account,password,politics)
+    console.log(candidates)
+    res.json(candidates)
+})
+
+app.get('/getcandidates',(req,res)=>{
+    let path = './data/candidates.json'
+    if(fs.existsSync(path)){
+        let candidates = JSON.parse(fs.readFileSync(path,'utf-8'));
+        res.json({success:true,candidates:candidates})
+    }else{
+        res.json({success:false,candidates:[],error:'沒有候選人資料'})
+    }
+})
 
 // 運行這個 port，參數分別為 port 和要執行的 function
 app.listen(port, () => {
