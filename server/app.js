@@ -3,9 +3,7 @@ const express = require('express');
 const Admin = require('./class/Admin');
 const fs = require('fs');
 const cors = require('cors');
-const { executionAsyncResource } = require('async_hooks');
 const Candidate = require('./class/Candidate');
-const { error } = require('console');
 
 // express 引入的是一個 function
 const app = express();
@@ -19,9 +17,11 @@ let admin = new Admin(adminData.name,adminData.account,adminData.password,adminD
 
 
 
-let votersPath = './data/voters.json';
+const votersPath = './data/voters.json';
+const votePath = './data/vote.json';
 // var voters = null;
 let voters = fs.existsSync(votersPath)?JSON.parse(fs.readFileSync(votersPath,{encoding:'utf-8'})):null;
+
 let candidatesPath = './data/candidates.json'
 let candidates = fs.existsSync(candidatesPath)?JSON.parse(fs.readFileSync(candidatesPath,'utf-8')):[]
 
@@ -73,14 +73,21 @@ app.post('/admin/save/:type',(req,res)=>{
 
 app.post('/login',(req,res)=>{
     const {account,password} = req.body;
+    const voteFile = JSON.parse(fs.readFileSync(votePath,'utf-8'))
     if(voters != null){
-        const result = voters.filter((voter)=>voter.account==account && voter.password == password);
+        const result = voters.find((voter)=>voter.account==account && voter.password == password);
         const isAdmin = account==admin.account && password == admin.password || false
-        if(result.length>0 || isAdmin){
+        let isVote=false;
+        let findId = isAdmin?admin.id:result.id
+        voteFile.forEach(vote => {
+            vote.userId.includes(findId)?isVote=true:isVote=false
+        });
+        if(isAdmin || result.length>0){
             res.json({
                 success:true,
-                userId:isAdmin?admin.id:result[0].id,
-                isAdmin:isAdmin
+                userId:isAdmin?admin.id:result.id,
+                isAdmin:isAdmin,
+                isVoted:isVote
             })
         }else{
             res.json({
@@ -115,9 +122,49 @@ app.get('/getcandidates',(req,res)=>{
     let path = './data/candidates.json'
     if(fs.existsSync(path)){
         let candidates = JSON.parse(fs.readFileSync(path,'utf-8'));
+        tmp = candidates.map((candidate)=>{
+            delete candidate.account;
+            delete candidate.password
+        })
         res.json({success:true,candidates:candidates})
     }else{
         res.json({success:false,candidates:[],error:'沒有候選人資料'})
+    }
+})
+
+app.post('/vote',(req,res)=>{
+    const {cId,userId} = req.body;
+    try {
+        let voteFile = [];
+
+        // 如果檔案存在就讀取
+        if (fs.existsSync(votePath)) {
+            const fileContent = fs.readFileSync(votePath, 'utf-8');
+            voteFile = JSON.parse(fileContent);
+        }
+
+        // 檢查是否已有這個候選人資料
+        let candidateVote = voteFile.find(v => v.cId === cId);
+
+        if (candidateVote) {
+            // 候選人存在，檢查 userId 是否已經投過票
+            if (!candidateVote.userId.includes(userId)) {
+                candidateVote.userId.push(userId);
+            } else {
+                return res.json({ success: false, message: '你已經投過票了' });
+            }
+        } else {
+            // 候選人不存在，新增資料
+            voteFile.push({ cId, userId: [userId] });
+        }
+
+        // 寫回檔案
+        fs.writeFileSync(votePath, JSON.stringify(voteFile, null, 4));
+
+        res.json({ success: true, message: '投票成功' });
+    } catch (err) {
+        console.error('寫入投票檔案失敗:', err);
+        res.status(500).json({ success: false, message: '伺服器錯誤' });
     }
 })
 
