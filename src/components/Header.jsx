@@ -32,7 +32,7 @@ export default function Header(){
                     <Nav className="ms-auto">
                         {isLoggedIn ? (
                             <>
-                                <Nav.Link href="/admin">後台</Nav.Link>
+                                <Nav.Link href="/manage">後台</Nav.Link>
                                 <Nav.Link onClick={handleLogout}>登出</Nav.Link>
                             </>
                         ) : (
