@@ -83,12 +83,7 @@ app.post('/login',(req,res)=>{
         const result = voters.find((voter)=>voter.account==account && voter.password == password);
         const isAdmin = account==admin.account && password == admin.password || false
         let isVote=false;
-        let findId = isAdmin?admin.id:result.id
-        voteFile.forEach(vote => {
-            vote.userId.includes(findId)?isVote=true:isVote=false
-        });
-
-           // 防止 result 為 undefined 時存取 id
+        // 防止 result 為 undefined 時存取 id
         if (!isAdmin && !result) {
             return res.json({
                 success: false,
@@ -96,6 +91,10 @@ app.post('/login',(req,res)=>{
                 account: null
             });
         }
+        let findId = isAdmin?admin.id:result.id
+        voteFile.forEach(vote => {
+            vote.userId.includes(findId)?isVote=true:isVote=false
+        });
 
         if(isAdmin || result){
             res.json({
