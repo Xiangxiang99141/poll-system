@@ -12,15 +12,20 @@ const port = 5001;
 
 app.use(cors());
 app.use(express.json());
-const adminData = JSON.parse(fs.readFileSync('./data/admin.json','utf-8'));
-let admin = new Admin(adminData.name,adminData.account,adminData.password,adminData.id);
-
-
-
 const votersPath = './data/voters.json';
 const votePath = './data/vote.json';
+const adminPath = './data/admin.json'
+
+const adminData = JSON.parse(fs.readFileSync(adminPath,'utf-8'));
+let admin = new Admin(adminData.name,adminData.account,adminData.password,adminData.id);
+if(adminData.id==''){
+    adminData.id = admin.id
+    fs.writeFileSync(adminPath,JSON.stringify(adminData,null,4))
+}
+
+
 // var voters = null;
-let voters = fs.existsSync(votersPath)?JSON.parse(fs.readFileSync(votersPath,{encoding:'utf-8'})):null;
+let voters = fs.existsSync(votersPath)?JSON.parse(fs.readFileSync(votersPath,{encoding:'utf-8'})):[];
 
 let candidatesPath = './data/candidates.json'
 let candidates = fs.existsSync(candidatesPath)?JSON.parse(fs.readFileSync(candidatesPath,'utf-8')):[]
@@ -73,7 +78,7 @@ app.post('/admin/save/:type',(req,res)=>{
 
 app.post('/login',(req,res)=>{
     const {account,password} = req.body;
-    const voteFile = JSON.parse(fs.readFileSync(votePath,'utf-8'))
+    const voteFile = fs.existsSync(votePath)?JSON.parse(fs.readFileSync(votePath,'utf-8')):[]
     if(voters != null){
         const result = voters.find((voter)=>voter.account==account && voter.password == password);
         const isAdmin = account==admin.account && password == admin.password || false
