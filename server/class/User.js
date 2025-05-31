@@ -3,7 +3,7 @@ const {v7:uuidv7} = require('uuid')
 
 class User{
     constructor(name,account,password,id=uuidv7()){
-        this.id = id
+        this.id = id==''?uuidv7():id
         this.name = name;
         this.account = account,
         this.password = password;
