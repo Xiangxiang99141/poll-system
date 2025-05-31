@@ -25,3 +25,6 @@ dist-ssr
 
 .env
 admin.json
+candidates.json
+vote.json
+voters.json
