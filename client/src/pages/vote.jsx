@@ -2,6 +2,7 @@ import { useState ,useEffect} from "react"
 import { Container ,Tab,Tabs,Col,Row,Alert,Button} from "react-bootstrap"
 import NoAccess from "../components/NoAccess"
 import CandidatesProfile from "../components/CandidatesProfile"
+const env = import.meta.env
 
 export default function Vote(){
     const [candidates,setCandidates] = useState([])
@@ -9,7 +10,7 @@ export default function Vote(){
     const [error,setError] = useState('')
     const [info,setInfo] = useState('')
     useEffect(()=>{
-        fetch('http://localhost:5001/getcandidates')
+        fetch(`${env.VITE_API_SERVER}/getcandidates`)
         .then((res)=>res.json())
         .then((data)=>{
             console.log(data);
@@ -70,7 +71,7 @@ export default function Vote(){
                                                 <Button variant="secondary" disabled className="mt-2">已投票</Button>
                                             ) : (
                                                 <Button variant="primary" className="mt-2" onClick={(e)=>{
-                                                    fetch('http://localhost:5001/vote',
+                                                    fetch(`${env.VITE_API_SERVER}/vote`,
                                                     {
                                                         body:JSON.stringify({
                                                             cId:candidate.id,

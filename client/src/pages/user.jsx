@@ -9,11 +9,12 @@ import {
     Row,
     InputGroup 
 } from "react-bootstrap";
+const env = import.meta.env
 
 export default function User(){
     let token = localStorage.getItem('token')
     const [user,setUser] = useState(null)
-    fetch('http://localhost:5001/getuser',{
+    fetch(`${env.VITE_API_SERVER}/getuser`,{
         body:JSON.stringify({
             userId:token,
         }),

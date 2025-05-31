@@ -9,6 +9,7 @@ import {
     Card,
     Alert
 } from "react-bootstrap";
+const env = import.meta.env
 // import users from 'data/'
 export default function Login() {
     const navigate = useNavigate();
@@ -18,7 +19,7 @@ export default function Login() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        fetch('http://localhost:5001/login',{
+        fetch(`${env.VITE_API_SERVER}/login`,{
             body:JSON.stringify({
                 account:account,
                 password:password

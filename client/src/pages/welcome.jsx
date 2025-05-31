@@ -4,12 +4,13 @@ import viteLogo from '/vite.svg'
 import '../styles/welcome.css'
 import { Container,Row,Alert, Col, Button} from "react-bootstrap"
 import CandidatesProfile from "../components/CandidatesProfile"
+const env = import.meta.env
 
 export default function Welcome(){
     const [count, setCount] = useState(0)
     const [candidates,setCandidates] = useState([])
     useEffect(()=>{
-        fetch('http://localhost:5001/getcandidates')
+        fetch(`${env.VITE_API_SERVER}/getcandidates`)
         .then((res)=>res.json())
         .then((data)=>{
             console.log(data);

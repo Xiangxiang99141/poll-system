@@ -12,7 +12,7 @@ import {
 } from "react-bootstrap";
 import CandidatesProfile from "../components/CandidatesProfile";
 
-
+const env = import.meta.env
 export default function Admin(){
     const [adminData, setAdminData] = useState(null); // ⚠️ 初始為 null
     const [newVoters,setVoters] = useState([])
@@ -29,7 +29,7 @@ export default function Admin(){
     }
     const saveVoterBtnHandler = (e)=>{
         console.log(newVoters);
-        fetch('http://localhost:5001/admin/save/v',{
+        fetch(`${env.VITE_API_SERVER}/admin/save/v`,{
             body:JSON.stringify(newVoters),
             method:"POST",
             headers: {
@@ -48,7 +48,7 @@ export default function Admin(){
     }
     const saveCandiBtnHandler = (e)=>{
         console.log(candidates);
-        fetch('http://localhost:5001/admin/save/c',{
+        fetch(`${env.VITE_API_SERVER}/admin/save/c`,{
             body:JSON.stringify(candidates),
             method:"POST",
             headers: {
@@ -66,7 +66,7 @@ export default function Admin(){
         });
     }
     const genVotervBtnHandler = (e)=>{
-        fetch(`http://localhost:5001/create/${genCount}`)
+        fetch(`${env.VITE_API_SERVER}/create/${genCount}`)
         .then((res)=>res.json())
         .then((data)=>{
             setVoters(data);
@@ -78,7 +78,7 @@ export default function Admin(){
             alert('請輸入全部資訊')
             return
         }
-        fetch('http://localhost:5001/addcandidate',
+        fetch(`${env.VITE_API_SERVER}/addcandidate`,
             {
                 body:JSON.stringify({
                     name:candidatesName,
@@ -103,12 +103,16 @@ export default function Admin(){
         setVoters([]);
     }
 
-    useEffect(()=>{     
-        fetch('http://localhost:5001/admin')
-            .then((res)=> res.json())
+    useEffect(()=>{  
+        console.log(env.VITE_API_SERVER) 
+        fetch(`${env.VITE_API_SERVER}/admin`,{
+            method:'GET',
+            headers:{
+                "content-type": "application/json",
+            }
+        })
+            .then((res)=> {return res.json()})
             .then((data)=>{
-                // const a = new Admin(data.name,data.account,data.password);
-                // console.log(data);
                 setAdminData({
                     "id":data.admin.id,
                     "name":data.admin.name,
@@ -122,7 +126,7 @@ export default function Admin(){
                     setCandidates(data.candidates);
                 }
             })
-            .catch((err) => console.error("無法取得 admin 資料", err));
+            .catch((err) => console.error("無法取得 admin 資料:", err));
     },[]);//deps [] 只運行一次
     return(
         <Container fluid>
